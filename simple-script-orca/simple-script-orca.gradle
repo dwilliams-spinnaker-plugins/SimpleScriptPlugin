@@ -1,0 +1,62 @@
+//import org.yaml.snakeyaml.Yaml
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: "io.spinnaker.plugin.service-extension"
+apply plugin: "maven-publish"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url "https://spinnaker-releases.bintray.com/jars" }
+}
+
+spinnakerPlugin {
+    serviceName = "orca"
+    pluginClass = "net.port8080.spinnaker.plugins.stage.script.simple.SimpleScriptPlugin"
+    requires="orca>=0.0.0"
+}
+
+dependencies {
+    compileOnly "org.pf4j:pf4j:${pf4jVersion}"
+
+    compileOnly (group: 'org.springframework', name: 'spring-context', version: '5.2.1.RELEASE')
+    compileOnly (group: 'com.netflix.spinnaker.kork', name: 'kork-plugins-spring-api', version: "${korkVersion}")
+    compileOnly (group: 'org.springframework', name: 'spring-web', version: '5.2.2.RELEASE')
+
+    compileOnly("org.projectlombok:lombok:1.18.16")
+    annotationProcessor("org.projectlombok:lombok:1.18.16")
+
+    compileOnly (group: 'com.netflix.spinnaker.orca', name: 'orca-core', version: "${orcaVersion}")
+    compileOnly (group: 'com.netflix.spinnaker.orca', name: 'orca-clouddriver', version: "${orcaVersion}")
+    compileOnly "com.netflix.spinnaker.kork:kork-plugins-api:${korkVersion}"
+    compileOnly "com.netflix.spinnaker.orca:orca-api:${orcaVersion}"
+
+    testImplementation(platform("com.netflix.spinnaker.orca:orca-bom:${orcaVersion}"))
+    testImplementation "com.netflix.spinnaker.orca:orca-api"
+    testImplementation "com.netflix.spinnaker.orca:orca-api-tck"
+    testImplementation "com.netflix.spinnaker.orca:orca-queue"
+    testImplementation "com.netflix.spinnaker.kork:kork-plugins-tck"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.5.2"
+    testImplementation "io.strikt:strikt-core:0.22.1"
+    testImplementation "dev.minutest:minutest:1.10.0"
+    testImplementation "io.mockk:mockk:1.9.3"
+    testImplementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.1"
+    testImplementation "javax.servlet:javax.servlet-api:4.0.1"
+
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.4.0"
+    testRuntime "org.junit.platform:junit-platform-launcher:1.4.0"
+    testRuntime "org.junit.platform:junit-platform-commons:1.5.2"
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+}

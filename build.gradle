@@ -1,0 +1,52 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins {
+    id("io.spinnaker.plugin.bundler").version("$spinnakerGradleVersion")
+    id("com.palantir.git-version").version("0.12.2")
+    id("com.diffplug.spotless").version("5.1.0")
+}
+
+repositories {
+    mavenCentral()
+}
+
+spinnakerBundle {
+    pluginId = "DwilliamsSpinnakerPlugins.SimpleScriptPlugin"
+    description = "A plugin that provides basic scripting for data manipulation directly in a pipeline."
+    provider = "https://github.com/dwilliams-spinnaker-plugins"
+    version = rootProject.version
+}
+
+version = normalizedVersion()
+
+subprojects {
+    group = "net.port8080.spinnaker.plugins.stage.script.simple"
+    version = rootProject.version
+
+    if (name != "simple-script-deck") {
+        apply plugin: "com.diffplug.spotless"
+        spotless {
+            kotlin {
+                ktlint().userData([
+                        disabled_rules          : "no-wildcard-imports",
+                        indent_size             : "2",
+                        continuation_indent_size: "2",
+                ])
+            }
+        }
+    }
+}
+
+String normalizedVersion() {
+    String fullVersion = gitVersion()
+    String normalized = fullVersion.split("-").first()
+    if (fullVersion.contains("dirty")) {
+        return "$normalized-SNAPSHOT"
+    } else {
+        return normalized
+    }
+}
