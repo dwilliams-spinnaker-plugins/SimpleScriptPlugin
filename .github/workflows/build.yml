@@ -24,9 +24,3 @@ jobs:
         with:
           name: dist
           path: build/distributions
-
-      - uses: armory-io/plugin-test-runner@main
-        with: 
-          service: ${{ github.event.client_payload.service }}
-          version: ${{ github.event.client_payload.version }}
-          plugin_sha: ${{ github.event.client_payload.sha }}
