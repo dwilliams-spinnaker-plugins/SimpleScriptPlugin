@@ -7,16 +7,20 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
           java-version: 11
+
       - name: Run Tests
         run: ./gradlew test
+
       - name: Build
         run: ./gradlew releaseBundle
+
       - name: Archive Build Artifacts
-        used: actions/upload-artifacts@v1
+        uses: actions/upload-artifacts@v1
         with:
           name: dist
           path: build/distributions
