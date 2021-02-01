@@ -7,6 +7,9 @@ import com.netflix.spinnaker.orca.api.pipeline.TaskResult;
 import com.netflix.spinnaker.orca.api.pipeline.models.ExecutionStatus;
 import com.netflix.spinnaker.orca.api.pipeline.models.StageExecution;
 import javax.annotation.Nonnull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -59,7 +62,7 @@ import net.port8080.spinnaker.plugins.stage.script.simple.BindArtifact;
 public final class ResolveScriptTask implements Task {
     public static final String TASK_NAME = "resolveScript";
 
-    //private final ManifestEvaluator manifestEvaluator;
+    private final Logger logger = LoggerFactory.getLogger(SimpleScriptPlugin.class);
 
     private final ArtifactUtils artifactUtils;
     private final ContextParameterProcessor contextParameterProcessor;
@@ -86,6 +89,7 @@ public final class ResolveScriptTask implements Task {
     @Nonnull
     @Override
     public TaskResult execute(@Nonnull StageExecution stage) {
+        logger.info("SimpleScriptPlugin.ResolveScriptTask.execute()");
         SimpleScriptContext context = stage.mapTo(SimpleScriptContext.class);
         //ManifestEvaluator.Result result = manifestEvaluator.evaluate(stage, context);
         //ImmutableMap<String, Object> outputs = getOutputs(result);
@@ -108,13 +112,19 @@ public final class ResolveScriptTask implements Task {
     }
 
     private String getScript(StageExecution stage, ScriptContext context) {
+        String finalScript = "";
         switch (context.getSource()) {
             case Artifact:
-                return getScriptFromArtifact(stage, context);
+                finalScript = getScriptFromArtifact(stage, context);
+                break;
             case Text:
-                return getScriptFromText(context);
+                finalScript = getScriptFromText(context);
+                break;
+            default:
+                throw new IllegalStateException("Unknown ManifestContext.Source " + context.getSource());
         }
-        throw new IllegalStateException("Unknown ManifestContext.Source " + context.getSource());
+        logger.info("SimpleScriptPlugin.ResolveScriptTask.getScript() finalScript: {}", finalScript);
+        return finalScript;
     }
 
     private String getScriptFromText(ScriptContext context) {
@@ -129,11 +139,18 @@ public final class ResolveScriptTask implements Task {
 
         String rawScript = retrySupport.retry(fetchScript(scriptArtifact), 10, Duration.ofMillis(200), true);
 
+        logger.info("SimpleScriptPlugin.ResolveScriptTask.getScriptFromArtifact() rawScript: {}", rawScript);
+
         if (context.isSkipExpressionEvaluation()) {
+            logger.info("SimpleScriptPlugin.ResolveScriptTask.getScriptFromArtifact() Skipping SpEL Evaluation");
             return rawScript;
         }
 
-        return getSpelEvaluatedScript(rawScript, stage);
+        String evaldScript = getSpelEvaluatedScript(rawScript, stage);
+
+        logger.info("SimpleScriptPlugin.ResolveScriptTask.getScriptFromArtifact() evaldScript: {}", evaldScript);
+
+        return evaldScript;
     }
 
     private Artifact getScriptArtifact(StageExecution stage, ScriptContext context) {
