@@ -1,6 +1,7 @@
 package net.port8080.spinnaker.plugins.stage.script.simple;
 
 //import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap;
 import com.netflix.spinnaker.kork.annotations.NonnullByDefault;
 import com.netflix.spinnaker.orca.api.pipeline.Task;
 import com.netflix.spinnaker.orca.api.pipeline.TaskResult;
@@ -13,6 +14,8 @@ import javax.script.ScriptEngineManager;
 
 //import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 //import static com.google.common.base.Preconditions.checkArgument;
 //import static com.google.common.collect.ImmutableList.toImmutableList;
@@ -61,18 +64,22 @@ public final class SimpleScriptTask implements Task {
     @Override
     public TaskResult execute(@Nonnull StageExecution stage) {
         SimpleScriptContext context = stage.mapTo(SimpleScriptContext.class);
-        Bindings outputs = null;
+
+        ImmutableMap.Builder<String, Object> builder = new ImmutableMap.Builder<String, Object>();
 
         try {
             ScriptEngineManager manager = new ScriptEngineManager();
             ScriptEngine engine = manager.getEngineByName("javascript"); // move to context soon
             engine.put("context", context);
-            outputs = (Bindings)engine.eval(context.getScript());
-
-            // Check for protected values
+            Bindings evalOutputs = (Bindings)engine.eval(context.getScript());
+            for (Map.Entry<String, Object> entry : evalOutputs.entrySet()) {
+                builder.put(entry.getKey(), entry.getValue());
+            }
         } catch (Exception ex) {
             ex.printStackTrace(); // FIXME: Actually log this and fail the stage.
         }
+
+        ImmutableMap<String, Object> outputs = builder.build();
 
         return TaskResult.builder(ExecutionStatus.SUCCEEDED).context(outputs).outputs(outputs).build();
     }
