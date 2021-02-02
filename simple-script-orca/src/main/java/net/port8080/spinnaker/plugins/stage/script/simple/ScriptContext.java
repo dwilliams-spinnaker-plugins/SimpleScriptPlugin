@@ -15,9 +15,9 @@ public interface ScriptContext {
 
     String getScriptArtifactAccount();
 
-    List<String> getRequiredArtifactIds();
+    //List<String> getRequiredArtifactIds();
 
-    List<BindArtifact> getRequiredArtifacts();
+    //List<BindArtifact> getRequiredArtifacts();
 
     boolean isSkipExpressionEvaluation();
 

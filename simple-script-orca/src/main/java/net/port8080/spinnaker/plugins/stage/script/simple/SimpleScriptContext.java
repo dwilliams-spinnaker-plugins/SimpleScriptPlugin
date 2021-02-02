@@ -21,8 +21,8 @@ public class SimpleScriptContext implements ScriptContext {
     Artifact scriptArtifact;
     String scriptArtifactAccount;
 
-    List<String> requiredArtifactIds;
-    List<BindArtifact> requiredArtifacts;
+    //List<String> requiredArtifactIds; // FIXME: Not needed
+    //List<BindArtifact> requiredArtifacts; // FIXME: Not needed
 
     @Builder.Default
     boolean skipExpressionEvaluation = false;

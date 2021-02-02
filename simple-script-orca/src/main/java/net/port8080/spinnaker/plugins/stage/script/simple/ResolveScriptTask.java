@@ -72,8 +72,8 @@ public final class ResolveScriptTask implements Task {
         ImmutableMap.Builder<String, Object> builder = new ImmutableMap.Builder<String, Object>();
 
         builder.put("script", getScript(stage, context));
-        builder.put("requiredArtifacts", getRequiredArtifacts(stage, context));
-        builder.put("optionalArtifacts", ImmutableList.copyOf(artifactUtils.getArtifacts(stage)));
+        //builder.put("requiredArtifacts", getRequiredArtifacts(stage, context)); // FIXME: Not needed
+        //builder.put("optionalArtifacts", ImmutableList.copyOf(artifactUtils.getArtifacts(stage))); // FIXME: Not needed
 
         ImmutableMap<String, Object> outputs = builder.build();
 
@@ -177,38 +177,38 @@ public final class ResolveScriptTask implements Task {
         return (String) processorResult.get("script");
     }
 
-    private ImmutableList<Artifact> getRequiredArtifacts(StageExecution stage, ScriptContext context) {
-        Stream<Artifact> requiredArtifactsFromId =
-                Optional.ofNullable(context.getRequiredArtifactIds()).orElse(emptyList()).stream()
-                        .map(artifactId -> resolveRequiredArtifactById(stage, artifactId));
+//    private ImmutableList<Artifact> getRequiredArtifacts(StageExecution stage, ScriptContext context) {
+//        Stream<Artifact> requiredArtifactsFromId =
+//                Optional.ofNullable(context.getRequiredArtifactIds()).orElse(emptyList()).stream()
+//                        .map(artifactId -> resolveRequiredArtifactById(stage, artifactId));
+//
+//        Stream<Artifact> requiredArtifacts =
+//                Optional.ofNullable(context.getRequiredArtifacts()).orElse(emptyList()).stream()
+//                        .map(artifact -> resolveRequiredArtifact(stage, artifact));
+//
+//        return Streams.concat(requiredArtifactsFromId, requiredArtifacts).collect(toImmutableList());
+//    }
 
-        Stream<Artifact> requiredArtifacts =
-                Optional.ofNullable(context.getRequiredArtifacts()).orElse(emptyList()).stream()
-                        .map(artifact -> resolveRequiredArtifact(stage, artifact));
+//    private Artifact resolveRequiredArtifactById(StageExecution stage, String artifactId) {
+//        return Optional.ofNullable(artifactUtils.getBoundArtifactForId(stage, artifactId))
+//                .orElseThrow(
+//                        () ->
+//                                new IllegalStateException(
+//                                        String.format(
+//                                                "No artifact with id %s could be found in the pipeline context.",
+//                                                artifactId)));
+//    }
 
-        return Streams.concat(requiredArtifactsFromId, requiredArtifacts).collect(toImmutableList());
-    }
-
-    private Artifact resolveRequiredArtifactById(StageExecution stage, String artifactId) {
-        return Optional.ofNullable(artifactUtils.getBoundArtifactForId(stage, artifactId))
-                .orElseThrow(
-                        () ->
-                                new IllegalStateException(
-                                        String.format(
-                                                "No artifact with id %s could be found in the pipeline context.",
-                                                artifactId)));
-    }
-
-    private Artifact resolveRequiredArtifact(StageExecution stage, BindArtifact artifact) {
-        return Optional.ofNullable(
-                artifactUtils.getBoundArtifactForStage(
-                        stage, artifact.getExpectedArtifactId(), artifact.getArtifact()))
-                .orElseThrow(
-                        () ->
-                                new IllegalStateException(
-                                        String.format(
-                                                "No artifact with id %s could be found in the pipeline context.",
-                                                artifact.getExpectedArtifactId())));
-    }
+//    private Artifact resolveRequiredArtifact(StageExecution stage, BindArtifact artifact) {
+//        return Optional.ofNullable(
+//                artifactUtils.getBoundArtifactForStage(
+//                        stage, artifact.getExpectedArtifactId(), artifact.getArtifact()))
+//                .orElseThrow(
+//                        () ->
+//                                new IllegalStateException(
+//                                        String.format(
+//                                                "No artifact with id %s could be found in the pipeline context.",
+//                                                artifact.getExpectedArtifactId())));
+//    }
 }
 

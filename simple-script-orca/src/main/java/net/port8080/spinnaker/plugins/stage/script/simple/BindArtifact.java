@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.annotation.Nullable;
 
 @Data
-public class BindArtifact {
+public class BindArtifact { // FIXME: Not needed
     @Nullable
     private String expectedArtifactId;
 

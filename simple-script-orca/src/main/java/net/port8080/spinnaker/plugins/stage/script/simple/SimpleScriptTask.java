@@ -36,15 +36,21 @@ public final class SimpleScriptTask implements Task {
             ScriptEngineManager manager = new ScriptEngineManager();
             ScriptEngine engine = manager.getEngineByName("javascript"); // move to context soon
             engine.put("stage_context", context); // FIXME: How to get pipeline context?
-            Bindings evalOutputs = (Bindings)engine.eval(context.getScript());
-            if(evalOutputs != null) {
-                for (Map.Entry<String, Object> entry : evalOutputs.entrySet()) {
-                    builder.put(entry.getKey(), entry.getValue());
-                }
+//            Bindings evalOutputs = (Bindings)engine.eval(context.getScript());
+//            if(evalOutputs != null) {
+//                for (Map.Entry<String, Object> entry : evalOutputs.entrySet()) {
+//                    builder.put(entry.getKey(), entry.getValue());
+//                }
+//            }
+            Object evalOutput = engine.eval(context.getScript());
+            if(evalOutput != null) {
+                builder.put("script_output", evalOutput);
             }
         } catch (Exception ex) {
+            // FIXME: This should just rethrow the exception and let the above class handle gracefully
+            //        Really, need to figure out the 'spinnaker task' way to handle exceptions here.
             logger.warn("SimpleScriptTask threw an exception: {}", ex.getMessage());
-            builder.put("exception", ex);
+            builder.put("exception", ex.getMessage()); // FIXME: Can't serialize to JSON the exception, use message.
             executionStatus = ExecutionStatus.TERMINAL;
         }
 
