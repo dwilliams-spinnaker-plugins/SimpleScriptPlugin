@@ -10,13 +10,5 @@ public class BindArtifact {
     @Nullable
     private String expectedArtifactId;
 
-//    @Nullable public String getExpectedArtifactId() {
-//        return expectedArtifactId;
-//    }
-
     @Nullable private Artifact artifact;
-
-//    @Nullable public Artifact getArtifact() {
-//        return artifact;
-//    }
 }
