@@ -13,6 +13,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 //import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -60,27 +62,34 @@ import java.util.Map;
 public final class SimpleScriptTask implements Task {
     public static final String TASK_NAME = "runSimpleScript";
 
+    private final Logger logger = LoggerFactory.getLogger(SimpleScriptTask.class);
+
     @Nonnull
     @Override
     public TaskResult execute(@Nonnull StageExecution stage) {
         SimpleScriptContext context = stage.mapTo(SimpleScriptContext.class);
 
+        ExecutionStatus executionStatus = ExecutionStatus.SUCCEEDED;
         ImmutableMap.Builder<String, Object> builder = new ImmutableMap.Builder<String, Object>();
 
         try {
             ScriptEngineManager manager = new ScriptEngineManager();
             ScriptEngine engine = manager.getEngineByName("javascript"); // move to context soon
-            engine.put("context", context);
+            engine.put("stage_context", context); // FIXME: How to get pipeline context?
             Bindings evalOutputs = (Bindings)engine.eval(context.getScript());
-            for (Map.Entry<String, Object> entry : evalOutputs.entrySet()) {
-                builder.put(entry.getKey(), entry.getValue());
+            if(evalOutputs != null) {
+                for (Map.Entry<String, Object> entry : evalOutputs.entrySet()) {
+                    builder.put(entry.getKey(), entry.getValue());
+                }
             }
         } catch (Exception ex) {
-            ex.printStackTrace(); // FIXME: Actually log this and fail the stage.
+            logger.warn("SimpleScriptTask threw an exception: {}", ex.getMessage());
+            builder.put("exception", ex);
+            executionStatus = ExecutionStatus.TERMINAL;
         }
 
         ImmutableMap<String, Object> outputs = builder.build();
 
-        return TaskResult.builder(ExecutionStatus.SUCCEEDED).context(outputs).outputs(outputs).build();
+        return TaskResult.builder(executionStatus).outputs(outputs).build();
     }
 }
