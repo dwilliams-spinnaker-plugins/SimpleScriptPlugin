@@ -12,6 +12,7 @@ import javax.script.ScriptEngineManager;
 
 import com.netflix.spinnaker.orca.pipeline.model.StageContext;
 import com.netflix.spinnaker.orca.pipeline.util.ContextParameterProcessor;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ public final class SimpleScriptTask implements Task {
         this.contextParameterProcessor = contextParameterProcessor;
     }
 
+    //@SneakyThrows
     @Nonnull
     @Override
     public TaskResult execute(@Nonnull StageExecution stage) {
@@ -60,8 +62,9 @@ public final class SimpleScriptTask implements Task {
             //        Really, need to figure out the 'spinnaker task' way to handle exceptions here.
             logger.warn("SimpleScriptTask threw an exception: {}", ex.getMessage());
             //builder.put("exception", ex.getMessage());
-            taskResult = TaskResult.builder(ExecutionStatus.TERMINAL).context("error", ex.getMessage()).build();
+            //taskResult = TaskResult.builder(ExecutionStatus.TERMINAL).context("error", ex.getMessage()).build();
             //executionStatus = ExecutionStatus.TERMINAL;
+            throw new RuntimeException(ex);
         }
 
         //ImmutableMap<String, Object> outputs = builder.build();
