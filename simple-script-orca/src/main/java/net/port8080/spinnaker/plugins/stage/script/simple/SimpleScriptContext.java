@@ -3,7 +3,6 @@ package net.port8080.spinnaker.plugins.stage.script.simple;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.netflix.spinnaker.kork.artifacts.model.Artifact;
-import java.util.List;
 import javax.annotation.Nullable;
 import lombok.Builder;
 import lombok.Value;
@@ -20,9 +19,6 @@ public class SimpleScriptContext implements ScriptContext {
     String scriptArtifactId;
     Artifact scriptArtifact;
     String scriptArtifactAccount;
-
-    //List<String> requiredArtifactIds; // FIXME: Not needed
-    //List<BindArtifact> requiredArtifacts; // FIXME: Not needed
 
     @Builder.Default
     boolean skipExpressionEvaluation = false;

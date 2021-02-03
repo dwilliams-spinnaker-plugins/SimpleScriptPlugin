@@ -15,11 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.collect.ImmutableList.toImmutableList;
-import static java.util.Collections.emptyList;
+//import static com.google.common.collect.ImmutableList.toImmutableList;
+//import static java.util.Collections.emptyList;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Streams;
+//import com.google.common.collect.ImmutableList;
+//import com.google.common.collect.Streams;
 import com.netflix.spinnaker.kork.artifacts.model.Artifact;
 import com.netflix.spinnaker.kork.core.RetrySupport;
 import com.netflix.spinnaker.orca.clouddriver.OortService;
@@ -32,7 +32,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
+//import java.util.stream.Stream;
 import retrofit.client.Response;
 
 // Example code at the following URLs:
