@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import jdk.nashorn.api.scripting.JSObject;
+//import jdk.nashorn.api.scripting.JSObject;
 
 @Component
 @NonnullByDefault
@@ -48,8 +48,8 @@ public final class SimpleScriptTask implements Task {
             ScriptEngine engine = manager.getEngineByName("javascript"); // move to context soon
             engine.put("execution_context", execution_context);
             engine.put("stage_context", context);
-            //Object evalOutput = engine.eval(context.getScript()); // FIXME: Figure out if lists can come out right
-            JSObject evalOutput = (JSObject) engine.eval(context.getScript());
+            Object evalOutput = engine.eval(context.getScript()); // FIXME: Figure out if lists can come out right
+            //JSObject evalOutput = (JSObject) engine.eval(context.getScript());
             if(evalOutput != null) {
                 builder.put("script_output", evalOutput);
             }
